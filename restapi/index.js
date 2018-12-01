@@ -71,10 +71,10 @@ function requestHandler(req, res) {
         const sendResponse = (statusCode = 200, payload = {}) => {
             let payloadString;
             if (typeof payload === 'object') {
-                res.setHeader('content-type', 'application/json;charset=utf-8');
+                res.setHeader('Content-Type', 'application/json;charset=utf-8');
                 payloadString = JSON.stringify(payload, null, 4);
             } else if (typeof payload === 'string') {
-                res.setHeader('content-type', 'text/plain;charset=utf-8');
+                res.setHeader('Content-Type', 'text/plain;charset=utf-8');
                 payloadString = payload;
             }
 
