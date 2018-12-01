@@ -5,7 +5,24 @@
  * or 'any' if it should respond to any method.
  */
 const routes = {};
-
+routes['welcome'] = {
+    path: /^(?:|welcome(?:\/([^\/]+))?)$/,
+    any: (data, sendResponse) => {
+        const recipient = typeof data['params'] !== 'undefined'
+            ? `, ${data['params'][0]}` : '';
+        sendResponse(200, {'message': `Welcome to my REST API${recipient}!`});
+    }
+};
+routes['echo'] = {
+    any: (data, sendResponse) => {
+        sendResponse(200, {
+            'path': parsedPath,
+            headers,
+            payload,
+            params
+        });
+    }
+};
 routes['ping'] = {
     any: (data, sendResponse) => {
         sendResponse(200, {'message': 'pong'});
