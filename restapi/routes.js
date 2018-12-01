@@ -15,12 +15,7 @@ routes['welcome'] = {
 };
 routes['echo'] = {
     any: (data, sendResponse) => {
-        sendResponse(200, {
-            'path': parsedPath,
-            headers,
-            payload,
-            params
-        });
+        sendResponse(200, data);
     }
 };
 routes['ping'] = {
