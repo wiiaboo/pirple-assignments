@@ -17,7 +17,7 @@ for (const [protoName, protocol] of Object.entries({http, https})) {
     const serverArgs = [];
 
     // special behavior for HTTPS
-    //
+    // if cert reading fails, HTTPS server is not used
     if (protoName === 'https') {
         try {
             serverArgs.push({
@@ -39,17 +39,25 @@ for (const [protoName, protocol] of Object.entries({http, https})) {
     });
 }
 
+/**
+ * Request Handler for each incoming request from http/https servers
+ *
+ * @param {Object} req - http/https Request object
+ * @param {Object} res - http/https Response object
+ */
 function requestHandler(req, res) {
     // get request URL and query arguments
     const parsedUrl = url.parse(req.url, true);
     const trimmedPath = parsedUrl.pathname.replace(/^\/+|\/+$/g, '');
 
+    // read the request body
     let reqBody = '';
     req.on('data', buffer => reqBody += sd.write(buffer));
 
     req.on('end', () => {
         reqBody += sd.end();
 
+        // object to be passed to the route handlers
         const data = {
             parsedUrl,
             method: req.method.toLowerCase(),
@@ -59,6 +67,7 @@ function requestHandler(req, res) {
 
         console.log(`→ Received ${req.method.toUpperCase()} /${trimmedPath} payload:\n${reqBody}`);
 
+        // function to be called by each route handler to prepare the response
         const sendResponse = (statusCode = 200, payload = {}) => {
             let payloadString;
             if (typeof payload === 'object') {
@@ -80,6 +89,8 @@ function requestHandler(req, res) {
 
         for (const [path, route] of Object.entries(routes)) {
             if (route.internal) continue;
+
+            // schmancy way of using regex to handle the routes instead of just text matching
             if (route.path instanceof RegExp && route.path.test(trimmedPath)) {
                 let matches = route.path.exec(trimmedPath);
                 if (matches && matches[1])
@@ -88,14 +99,19 @@ function requestHandler(req, res) {
             let pathIsMatch = ((route.path instanceof RegExp &&
                     route.path.test(trimmedPath)) ||
                 path === trimmedPath);
+
+            // if path is a match to both path and method used
             if (pathIsMatch &&
                 typeof route[method] === 'function') {
                 return route[method](data, sendResponse);
+            // if only path is a match and the route handler has an 'any' fallback
             } else if (pathIsMatch &&
                 typeof route['any'] === 'function') {
                 return route['any'](data, sendResponse);
             }
         }
+
+        // if no route has been found
         return routes['404']['any'](data, sendResponse);
     });
 }

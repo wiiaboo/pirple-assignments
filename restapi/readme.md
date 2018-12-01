@@ -17,3 +17,12 @@ The optional NODE_ENV environment is `staging` by default. There's also `product
 ```bash
 openssl req -newkey rsa:4096 -new -nodes -x509 -days 3650 -keyout certs/key.pem -out certs/cert.pem -subj "/CN=localhost"
 ```
+
+### Supported endpoints:
+Unless specified otherwise, any method can be used with each endpoint.
+
+- `/` - welcome message
+- `/welcome[/<anything]` - more personalized welcome message
+- `/echo` - responds back with any queries, headers, payload sent in the request
+- `/ping` - responds back with 'pong'
+- `/hello` - another welcome message, but in Japanese
