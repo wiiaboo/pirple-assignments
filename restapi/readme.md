@@ -25,4 +25,4 @@ Unless specified otherwise, any method can be used with each endpoint.
 - `/welcome[/<anything]` - more personalized welcome message
 - `/echo` - responds back with any queries, headers, payload sent in the request
 - `/ping` - responds back with 'pong'
-- `/hello` - another welcome message, but in Japanese
+- `GET /hello` - another welcome message, but in Japanese
