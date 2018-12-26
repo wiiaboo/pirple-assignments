@@ -36,4 +36,4 @@ routes['404'] = {
     }
 };
 
-module.exports = routes;
+export default routes;
