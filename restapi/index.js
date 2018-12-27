@@ -2,15 +2,15 @@
  * Main entry point to REST JSON API server
  */
 
-import http from 'http';
-import https from 'https';
-import { parse } from 'url';
-import { readFileSync } from 'fs';
-import { StringDecoder } from 'string_decoder';
+const http = require('http'),
+    https = require('https'),
+    url = require('url'),
+    fs = require('fs'),
+    StringDecoder = require('string_decoder').StringDecoder;
 
-import { ports } from './config';
-import routes from './routes';
-const sd = new StringDecoder('utf-8');
+const config = require('./config'),
+    routes = require('./routes'),
+    sd = new StringDecoder('utf-8');
 
 //  Initiate a server for each protocol and assign them the request handler
 for (const [protoName, protocol] of Object.entries({http, https})) {
@@ -21,8 +21,8 @@ for (const [protoName, protocol] of Object.entries({http, https})) {
     if (protoName === 'https') {
         try {
             serverArgs.push({
-                'key': readFileSync('./certs/key.pem'),
-                'cert': readFileSync('./certs/cert.pem')
+                'key': fs.readFileSync('./certs/key.pem'),
+                'cert': fs.readFileSync('./certs/cert.pem')
             });
         } catch (err) {
             console.log('[WARN] Failed to open https certificate files. Skipping HTTPS server.');
@@ -34,8 +34,8 @@ for (const [protoName, protocol] of Object.entries({http, https})) {
 
     const server = protocol.createServer(...serverArgs);
 
-    server.listen(ports[protoName], () => {
-        console.log(`⇒ Listening on port ${ports[protoName]} for ${protoName.toUpperCase()}`);
+    server.listen(config.ports[protoName], () => {
+        console.log(`⇒ Listening on port ${config.ports[protoName]} for ${protoName.toUpperCase()}`);
     });
 }
 
@@ -47,7 +47,7 @@ for (const [protoName, protocol] of Object.entries({http, https})) {
  */
 function requestHandler(req, res) {
     // get request URL and query arguments
-    const parsedUrl = parse(req.url, true);
+    const parsedUrl = url.parse(req.url, true);
     const trimmedPath = parsedUrl.pathname.replace(/^\/+|\/+$/g, '');
 
     // read the request body

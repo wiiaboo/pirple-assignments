@@ -22,5 +22,5 @@ const configs = {
     }
 };
 
- export default (typeof configs[process.env.NODE_ENV] === 'object') ?
+ module.exports = (typeof configs[process.env.NODE_ENV] === 'object') ?
     configs[process.env.NODE_ENV] : configs.staging;
